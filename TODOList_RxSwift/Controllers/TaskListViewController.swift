@@ -17,6 +17,7 @@ class TaskListViewController: UIViewController, UITableViewDelegate, UITableView
     @IBOutlet weak var tableView: UITableView!
     
     private var tasks = BehaviorRelay<[Task]>(value: [])
+    private var filtredTasks = [Task]()
     
     let disposeBag = DisposeBag()
     
@@ -35,19 +36,47 @@ class TaskListViewController: UIViewController, UITableViewDelegate, UITableView
             let addCV = navC.viewControllers.first as? AddTaskViewController
         else {  fatalError("Controller not found") }
         
-        addCV.taskSubjectObservable.subscribe(onNext: { task in
+        addCV.taskSubjectObservable.subscribe(onNext: { [unowned self] task in
             
             let priority = Priority(rawValue: self.perioritySegmentedControl.selectedSegmentIndex - 1)
             
             
             print(task)
+            
             var excistingTasks = self.tasks.value
             excistingTasks.append(task)
             self.tasks.accept(excistingTasks)
             
+            self.filterTasks(by: priority)
+            
             }).disposed(by: disposeBag)
      
      }
+    
+    // MARK: - Filter Tasks
+    private func filterTasks(by priority: Priority?){
+        
+        if priority == nil {
+            self.filtredTasks = self.tasks.value
+            
+        }else{
+            self.tasks.map { tasks in
+                
+                return tasks.filter { $0.priority == priority! }
+                
+            }.subscribe(onNext: { [weak self] tasks in
+                self?.filtredTasks = tasks
+                print("####### tasks #########")
+                print(tasks)
+                }).disposed(by: disposeBag)
+        }
+    }
+    
+     // MARK: - Action
+    @IBAction func priorityValueChanged(segmentedControl: UISegmentedControl){
+        let priority = Priority(rawValue: segmentedControl.selectedSegmentIndex - 1)
+        filterTasks(by: priority)
+    }
     
     // MARK: - UITableViewDataSource
     func numberOfSections(in tableView: UITableView) -> Int {
