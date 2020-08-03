@@ -6,7 +6,9 @@
 //  Copyright © 2020 mohamed  habib. All rights reserved.
 //
 
+import Foundation
 import UIKit
+import RxSwift
 
 class TaskListViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
@@ -16,6 +18,8 @@ class TaskListViewController: UIViewController, UITableViewDelegate, UITableView
     @IBOutlet weak var perioritySegmentedControl: UISegmentedControl!
     @IBOutlet weak var tableView: UITableView!
     
+    let disposeBag = DisposeBag()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -23,15 +27,21 @@ class TaskListViewController: UIViewController, UITableViewDelegate, UITableView
     }
     
     
-    /*
-     // MARK: - Navigation
-     
-     // In a storyboard-based application, you will often want to do a little preparation before navigation
+    
+    //  MARK: - Navigation
      override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-     // Get the new view controller using segue.destination.
-     // Pass the selected object to the new view controller.
+        
+        guard let navC = segue.destination as? UINavigationController,
+            let addCV = navC.viewControllers.first as? AddTaskViewController
+        else {  fatalError("Controller not found") }
+        
+        addCV.taskSubjectObservable.subscribe(onNext: { task in
+            
+            print(task)
+            
+            }).disposed(by: disposeBag)
+     
      }
-     */
     
     // MARK: - UITableViewDataSource
     func numberOfSections(in tableView: UITableView) -> Int {
