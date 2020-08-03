@@ -12,11 +12,10 @@ import RxSwift
 
 class TaskListViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
-    
-    
-    
     @IBOutlet weak var perioritySegmentedControl: UISegmentedControl!
     @IBOutlet weak var tableView: UITableView!
+    
+    private var tasks = Variable<[Task]>([])
     
     let disposeBag = DisposeBag()
     
@@ -38,6 +37,7 @@ class TaskListViewController: UIViewController, UITableViewDelegate, UITableView
         addCV.taskSubjectObservable.subscribe(onNext: { task in
             
             print(task)
+            self.tasks.value.append(task)
             
             }).disposed(by: disposeBag)
      
