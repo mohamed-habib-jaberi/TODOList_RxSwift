@@ -8,8 +8,13 @@
 
 import UIKit
 
+
 class AddTaskViewController: UIViewController {
 
+    @IBOutlet weak var prioritySegmentedControl: UISegmentedControl!
+    @IBOutlet weak var taskTitleTextField: UITextField!
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -17,14 +22,18 @@ class AddTaskViewController: UIViewController {
     }
     
 
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+ 
+    // MARK: - Action
+    
+    @IBAction func save(){
+        
+        guard let priority =  Priority(rawValue: self.prioritySegmentedControl.selectedSegmentIndex),
+            let title = self.taskTitleTextField.text
+        else { return  }
+        
+        let task = Task(title: title, priority: priority)
     }
-    */
+
+   
 
 }
