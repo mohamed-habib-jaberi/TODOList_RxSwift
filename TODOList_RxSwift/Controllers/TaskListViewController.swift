@@ -58,6 +58,7 @@ class TaskListViewController: UIViewController, UITableViewDelegate, UITableView
         
         if priority == nil {
             self.filtredTasks = self.tasks.value
+            self.updatedTableView()
             
         }else{
             self.tasks.map { tasks in
@@ -66,12 +67,18 @@ class TaskListViewController: UIViewController, UITableViewDelegate, UITableView
                 
             }.subscribe(onNext: { [weak self] tasks in
                 self?.filtredTasks = tasks
+                self?.updatedTableView()
                 print("####### tasks #########")
                 print(tasks)
                 }).disposed(by: disposeBag)
         }
     }
     
+    private func updatedTableView(){
+        DispatchQueue.main.async {
+            self.tableView.reloadData()
+        }
+    }
      // MARK: - Action
     @IBAction func priorityValueChanged(segmentedControl: UISegmentedControl){
         let priority = Priority(rawValue: segmentedControl.selectedSegmentIndex - 1)
@@ -83,12 +90,14 @@ class TaskListViewController: UIViewController, UITableViewDelegate, UITableView
         return 1
     }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 10
+        return self.filtredTasks.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "TaskTableViewCell", for: indexPath)
+        
+        cell.textLabel?.text = self.filtredTasks[indexPath.row].title
         return cell
     }
     
